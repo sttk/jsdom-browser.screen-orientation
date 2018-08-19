@@ -1,6 +1,6 @@
 {
   "name": "jsdom-browser.screen-orientation",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "The implementation of the Screen Orientation API for jsdom-browser.",
   "main": "src/index.js",
   "files": [
