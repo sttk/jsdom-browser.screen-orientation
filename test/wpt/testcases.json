@@ -1,0 +1,9 @@
+{
+  "lock-bad-argument.html": true,
+  "lock-basic.html": true,
+  "lock-sandboxed-iframe.html": true,
+  "onchange-event-subframe.html": true,
+  "onchange-event.html": true,
+  "orientation-reading.html": true,
+  "page-visibility-manual.html": "Not support page-visibility yet."
+}
