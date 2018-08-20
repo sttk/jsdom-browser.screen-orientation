@@ -1,4 +1,4 @@
-# [jsdom-browser.screen-orientation][repo-url] [![NPM][npm-img]][npm-url] [![MIT License][mit-img]][mit-url] [![Build Status][travis-img]][travis-url] [![Build Status][appveyor-img]][appveyor-url] [![Coverage Status][coverage-img]][coverage-url]
+# [jsdom-browser.screen-orientation][repo-url] [![NPM][npm-img]][npm-url] [![MIT License][mit-img]][mit-url] [![WPT][wpt-img]][wpt-url] [![Build Status][travis-img]][travis-url] [![Build Status][appveyor-img]][appveyor-url] [![Coverage Status][coverage-img]][coverage-url]
 
 The implementation of [the Screen Orientation API][spec-url] for [jsdom-browser][jsdom-browser-url].
 
@@ -306,6 +306,9 @@ See the file LICENSE in this distribution for more details.
 
 [mit-img]: https://img.shields.io/badge/license-MIT-green.svg
 [mit-url]: https://opensource.org/licenses.MIT
+
+[wpt-img]: https://img.shields.io/badge/web--platform--tests-pass-brightgreen.svg
+[wpt-url]: https://github.com/web-platform-tests/wpt
 
 [travis-img]: https://travis-ci.org/sttk/jsdom-browser.screen-orientation.svg?branch=master
 [travis-url]: https://travis-ci.org/sttk/jsdom-browser.screen-orientation
