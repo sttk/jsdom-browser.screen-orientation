@@ -38,5 +38,5 @@ module.exports = {
       'screen.orientation.lock() was aborted.',
     lockInvalidLockType:
       'screen.orientation.lock() causes an error: invalid type.',
-  }
+  },
 }

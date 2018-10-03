@@ -56,12 +56,11 @@ function promiseToApplyOrientationLock (config, lockType) {
       orientations.push('landscape-secondary')
       break
     }
-    /* istanbul ignore next */
     default: {
       // For passing web-platform-tests/wpt/screen-orientation/
       //   lock-bad-argument.html
       return promiseClass.reject(new TypeError(
-        config.message.lockInvalidType))
+        config.message.lockInvalidLockType))
     }
   }
 
@@ -85,3 +84,4 @@ function promiseToApplyOrientationLock (config, lockType) {
 }
 
 module.exports = promiseToApplyOrientationLock
+

@@ -3,10 +3,7 @@
 const { expect } = require('chai')
 const { JSDOM } = require('jsdom')
 
-const create = require('./fixtures/create-orientation')
-
-const { ScreenConfig } = require('jsdom-browser.screen')
-const { ScreenOrientation, ScreenOrientationConfig } = require('../src')
+const create = require('./fixtures/create-orientations')
 
 const initConfig = {
   relationsOfTypeAndAngle: {
@@ -18,24 +15,24 @@ const initConfig = {
 }
 
 describe('Rotate', () => {
-  it('Should change descendand orientations and fire change event',
-  done => {
+  it('Should change descendand orientations and fire change event', done => {
     const log = []
 
     const win1 = new JSDOM().window
     const win2 = new JSDOM().window
     win2._top = win1
+    win1._length = 1
+    win1[0] = win2
 
     const ret1 = create(log, '1', initConfig, win1)
     const orientation1 = ret1.orientation
-    const config1 = ret1.config
+    const orientationConfig1 = ret1.orientationConfig
     const screenConfig1 = ret1.screenConfig
 
     const ret2 = create(log, '2', initConfig, win2)
     const orientation2 = ret2.orientation
-    const config2 = ret2.config
+    const orientationConfig2 = ret2.orientationConfig
     const screenConfig2 = ret2.screenConfig
-    expect(screenConfig1).to.equal(screenConfig2)
 
     expect(orientation1.type).to.equal('portrait-primary')
     expect(orientation1.angle).to.equal(0)
@@ -43,8 +40,9 @@ describe('Rotate', () => {
     expect(orientation2.angle).to.equal(0)
     expect(log).to.deep.equal([])
 
-    screenConfig1.deviceAngle = 80
-    config1.handleRotation()
+    screenConfig1.deviceAngle = -80
+    expect(screenConfig2.deviceAngle).to.equal(-80)
+    orientationConfig1.handleRotation()
 
     let counter = 0
     orientation2.addEventListener('change', () => {
@@ -64,8 +62,8 @@ describe('Rotate', () => {
             '2 Orientation was changed (onchange): landscape-primary',
           ])
 
-          screenConfig2.deviceAngle = 280
-          config2.handleRotation()
+          screenConfig2.deviceAngle = -280
+          orientationConfig2.handleRotation()
           break
         }
         case 2: {
@@ -100,17 +98,18 @@ describe('Rotate', () => {
     const win1 = new JSDOM().window
     const win2 = new JSDOM().window
     win2._top = win1
+    win1._length = 1
+    win1[0] = win2
 
     const ret1 = create(log, '1', initConfig, win1)
     const orientation1 = ret1.orientation
-    const config1 = ret1.config
+    const orientationConfig1 = ret1.orientationConfig
     const screenConfig1 = ret1.screenConfig
 
     const ret2 = create(log, '2', initConfig, win2)
     const orientation2 = ret2.orientation
-    const config2 = ret2.config
+    const orientationConfig2 = ret2.orientationConfig
     const screenConfig2 = ret2.screenConfig
-    expect(screenConfig1).to.equal(screenConfig2)
 
     expect(orientation1.type).to.equal('portrait-primary')
     expect(orientation1.angle).to.equal(0)
@@ -125,72 +124,21 @@ describe('Rotate', () => {
       expect.fail()
     })
 
-    screenConfig1.deviceAngle = 350
-    config1.handleRotation()
+    screenConfig1.deviceAngle = -350
+    orientationConfig1.handleRotation()
     expect(orientation1.type).to.equal('portrait-primary')
     expect(orientation1.angle).to.equal(0)
     expect(orientation2.type).to.equal('portrait-primary')
     expect(orientation2.angle).to.equal(0)
     expect(log).to.deep.equal([])
 
-    screenConfig2.deviceAngle = 10
-    config2.handleRotation()
+    screenConfig2.deviceAngle = -10
+    orientationConfig2.handleRotation()
     expect(orientation1.type).to.equal('portrait-primary')
     expect(orientation1.angle).to.equal(0)
     expect(orientation2.type).to.equal('portrait-primary')
     expect(orientation2.angle).to.equal(0)
     expect(log).to.deep.equal([])
     done()
-  })
-
-  it('Should not fire when other orientation is changed', done => {
-    const log = []
-
-    const win1 = new JSDOM().window
-    const win2 = new JSDOM().window
-
-    const screenConfig = new ScreenConfig({
-      width: 1024,
-      height: 768,
-    })
-
-    const config1 = new ScreenOrientationConfig(screenConfig, initConfig)
-    const config2 = new ScreenOrientationConfig(screenConfig, initConfig)
-
-    const orientation1 = ScreenOrientation.create([], {
-      associatedDocument: win1.document
-    })
-    const orientation2 = ScreenOrientation.create([], {
-      associatedDocument: win2.document
-    })
-
-    orientation1.addEventListener('change', () => {
-      log.push(`1 Orientation was changed: ${orientation1.type}`)
-    })
-    orientation2.addEventListener('change', () => {
-      log.push(`2 Orientation was changed: ${orientation2.type}`)
-    })
-
-    config1.configure(orientation1)
-    expect(() => config2.configure(orientation2)).to.throw(Error)
-
-    expect(orientation1.type).to.equal('portrait-primary')
-    expect(orientation1.angle).to.equal(0)
-    expect(orientation2.type).to.equal('')
-    expect(orientation2.angle).to.equal(0)
-    expect(log).to.deep.equal([])
-
-    screenConfig.deviceAngle = 90
-    config1.handleRotation()
-
-    orientation1.addEventListener('change', () => {
-      expect(log).to.deep.equal([
-        '1 Orientation was changed: landscape-primary',
-      ])
-      done()
-    })
-    orientation2.addEventListener('change', () => {
-      expect.fail()
-    })
   })
 })

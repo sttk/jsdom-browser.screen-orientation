@@ -2,32 +2,30 @@
 
 const { expect } = require('chai')
 const { JSDOM } = require('jsdom')
-const create = require('./fixtures/create-orientation')
+const create = require('./fixtures/create-orientations')
 const path = require('path')
-
-const initConfig = {
-  relationsOfTypeAndAngle: {
-    'portrait-primary': 0,
-    'landscape-primary': 90,
-    'portrait-secondary': 180,
-    'landscape-secondary': 270,
-  },
-}
 
 describe('Lock error', () => {
   it('Should simulate to throw NotSupportedError by flag', done => {
     const log = []
-    const { orientation, config, screenConfig } = create(log, '', initConfig)
+    const { orientation, orientationConfig, screenConfig } = create(log, '', {
+      relationsOfTypeAndAngle: {
+        'portrait-primary': 0,
+        'landscape-primary': 90,
+        'portrait-secondary': 180,
+        'landscape-secondary': 270,
+      },
+    })
 
-    screenConfig.deviceAngle = 90
-    config.update()
+    screenConfig.deviceAngle = -90
+    orientationConfig.update()
 
-    config.isSupportedLocking = false
+    orientationConfig.isSupportedLocking = false
 
     expect(orientation.type).to.equal('landscape-primary')
     expect(orientation.angle).to.equal(90)
-    expect(config.currentType).to.equal('landscape-primary')
-    expect(config.currentAngle).to.equal(90)
+    expect(orientationConfig.currentType).to.equal('landscape-primary')
+    expect(orientationConfig.currentAngle).to.equal(90)
 
     orientation.addEventListener('change', () => {
       expect.fail()
@@ -38,24 +36,32 @@ describe('Lock error', () => {
       expect.fail()
     }).catch(e => {
       expect(e.name).to.equal('NotSupportedError')
-      expect(e.message).to.equal(config.message.lockNotSupportedError)
+      expect(e.message).to.equal(
+        orientationConfig.message.lockNotSupportedError)
       done()
     })
   })
 
   it('Should simulate to throw SecurityError by flag', done => {
     const log = []
-    const { orientation, config, screenConfig } = create(log, '', initConfig)
+    const { orientation, orientationConfig, screenConfig } = create(log, '', {
+      relationsOfTypeAndAngle: {
+        'portrait-primary': 0,
+        'landscape-primary': 90,
+        'portrait-secondary': 180,
+        'landscape-secondary': 270,
+      },
+    })
 
-    screenConfig.deviceAngle = 90
-    config.update()
+    screenConfig.deviceAngle = -90
+    orientationConfig.update()
 
-    config.isSecurityError = true
+    orientationConfig.isSecurityError = true
 
     expect(orientation.type).to.equal('landscape-primary')
     expect(orientation.angle).to.equal(90)
-    expect(config.currentType).to.equal('landscape-primary')
-    expect(config.currentAngle).to.equal(90)
+    expect(orientationConfig.currentType).to.equal('landscape-primary')
+    expect(orientationConfig.currentAngle).to.equal(90)
 
     orientation.addEventListener('change', () => {
       expect.fail()
@@ -66,12 +72,20 @@ describe('Lock error', () => {
       expect.fail()
     }).catch(e => {
       expect(e.name).to.equal('SecurityError')
-      expect(e.message).to.equal(config.message.lockSecurityError)
+      expect(e.message).to.equal(orientationConfig.message.lockSecurityError)
       done()
     })
   })
 
   it('Should throw SecurityError when sandboxed orientation lock', done => {
+    const initConfig = {
+      relationsOfTypeAndAngle: {
+        'portrait-primary': 0,
+        'landscape-primary': 90,
+        'portrait-secondary': 180,
+        'landscape-secondary': 270,
+      },
+    }
     const fp = path.resolve(__dirname, 'fixtures/iframe-parent.html')
     JSDOM.fromFile(fp).then(dom => {
       const log = []
@@ -153,15 +167,22 @@ describe('Lock error', () => {
 
   it('Should throw AbortError when locking by next locking', done => {
     const log = []
-    const { orientation, config, screenConfig } = create(log, '', initConfig)
+    const { orientation, orientationConfig, screenConfig } = create(log, '', {
+      relationsOfTypeAndAngle: {
+        'portrait-primary': 0,
+        'landscape-primary': 90,
+        'portrait-secondary': 180,
+        'landscape-secondary': 270,
+      },
+    })
 
-    screenConfig.deviceAngle = 90
-    config.update()
+    screenConfig.deviceAngle = -90
+    orientationConfig.update()
 
     expect(orientation.type).to.equal('landscape-primary')
     expect(orientation.angle).to.equal(90)
-    expect(config.currentType).to.equal('landscape-primary')
-    expect(config.currentAngle).to.equal(90)
+    expect(orientationConfig.currentType).to.equal('landscape-primary')
+    expect(orientationConfig.currentAngle).to.equal(90)
 
     let counter = 3
     function end () {
@@ -176,7 +197,7 @@ describe('Lock error', () => {
       expect.fail()
     }).catch(e => {
       expect(e.name).to.equal('AbortError')
-      expect(e.message).to.equal(config.message.lockAbortError)
+      expect(e.message).to.equal(orientationConfig.message.lockAbortError)
       end()
     })
 
@@ -184,9 +205,10 @@ describe('Lock error', () => {
       log.push('Orientation was locked (2)')
       expect(orientation.type).to.equal('landscape-secondary')
       expect(orientation.angle).to.equal(270)
-      expect(config.currentType).to.equal('landscape-secondary')
-      expect(config.currentAngle).to.equal(270)
-      expect(config.orientations).to.deep.equal(['landscape-secondary'])
+      expect(orientationConfig.currentType).to.equal('landscape-secondary')
+      expect(orientationConfig.currentAngle).to.equal(270)
+      expect(orientationConfig.orientations).to.deep.equal(
+        ['landscape-secondary'])
       end()
     }).catch(e => {
       done(e)
@@ -206,25 +228,32 @@ describe('Lock error', () => {
   it('Should simulate to abort locking for not being active orientation ' +
   '\n\tlock by flag', done => {
     const log = []
-    const { orientation, config, screenConfig } = create(log, '', initConfig)
+    const { orientation, orientationConfig, screenConfig } = create(log, '', {
+      relationsOfTypeAndAngle: {
+        'portrait-primary': 0,
+        'landscape-primary': 90,
+        'portrait-secondary': 180,
+        'landscape-secondary': 270,
+      },
+    })
 
-    screenConfig.deviceAngle = 90
-    config.update()
+    screenConfig.deviceAngle = -90
+    orientationConfig.update()
 
     expect(orientation.type).to.equal('landscape-primary')
     expect(orientation.angle).to.equal(90)
-    expect(config.currentType).to.equal('landscape-primary')
-    expect(config.currentAngle).to.equal(90)
+    expect(orientationConfig.currentType).to.equal('landscape-primary')
+    expect(orientationConfig.currentAngle).to.equal(90)
 
-    config.isActiveOrientationLock = false
+    orientationConfig.isActiveOrientationLock = false
 
     orientation.lock('portrait').then(() => {
       log.push('Orientation was locked')
       expect(orientation.type).to.equal('landscape-primary')
       expect(orientation.angle).to.equal(90)
-      expect(config.currentType).to.equal('landscape-primary')
-      expect(config.currentAngle).to.equal(90)
-      expect(config.orientations).to.deep.equal([
+      expect(orientationConfig.currentType).to.equal('landscape-primary')
+      expect(orientationConfig.currentAngle).to.equal(90)
+      expect(orientationConfig.orientations).to.deep.equal([
         'portrait-primary',
         'portrait-secondary',
       ])
@@ -232,24 +261,24 @@ describe('Lock error', () => {
         'Orientation was locked',
       ])
 
-      config.isActiveOrientationLock = true
-      config.handleVisible()
+      orientationConfig.isActiveOrientationLock = true
+      orientationConfig.handleVisible()
 
       expect(orientation.type).to.equal('portrait-primary')
       expect(orientation.angle).to.equal(0)
-      expect(config.currentType).to.equal('portrait-primary')
-      expect(config.currentAngle).to.equal(0)
-      expect(config.orientations).to.deep.equal([
+      expect(orientationConfig.currentType).to.equal('portrait-primary')
+      expect(orientationConfig.currentAngle).to.equal(0)
+      expect(orientationConfig.orientations).to.deep.equal([
         'portrait-primary',
         'portrait-secondary',
       ])
 
-      config.handleVisible()
+      orientationConfig.handleVisible()
       expect(orientation.type).to.equal('portrait-primary')
       expect(orientation.angle).to.equal(0)
-      expect(config.currentType).to.equal('portrait-primary')
-      expect(config.currentAngle).to.equal(0)
-      expect(config.orientations).to.deep.equal([
+      expect(orientationConfig.currentType).to.equal('portrait-primary')
+      expect(orientationConfig.currentAngle).to.equal(0)
+      expect(orientationConfig.orientations).to.deep.equal([
         'portrait-primary',
         'portrait-secondary',
       ])
@@ -273,12 +302,19 @@ describe('Lock error', () => {
 
   it('Should lock by config without change event', done => {
     const log = []
-    const { orientation, config } = create(log, '', initConfig)
+    const { orientation, orientationConfig } = create(log, '', {
+      relationsOfTypeAndAngle: {
+        'portrait-primary': 0,
+        'landscape-primary': 90,
+        'portrait-secondary': 180,
+        'landscape-secondary': 270,
+      },
+    })
 
     expect(orientation.type).to.equal('portrait-primary')
     expect(orientation.angle).to.equal(0)
-    expect(config.currentType).to.equal('portrait-primary')
-    expect(config.currentAngle).to.equal(0)
+    expect(orientationConfig.currentType).to.equal('portrait-primary')
+    expect(orientationConfig.currentAngle).to.equal(0)
 
     orientation.addEventListener('change', () => {
       expect.fail()
@@ -288,9 +324,9 @@ describe('Lock error', () => {
       log.push('Orientation was locked')
       expect(orientation.type).to.equal('portrait-primary')
       expect(orientation.angle).to.equal(0)
-      expect(config.currentType).to.equal('portrait-primary')
-      expect(config.currentAngle).to.equal(0)
-      expect(config.orientations).to.deep.equal([
+      expect(orientationConfig.currentType).to.equal('portrait-primary')
+      expect(orientationConfig.currentAngle).to.equal(0)
+      expect(orientationConfig.orientations).to.deep.equal([
         'portrait-primary',
         'portrait-secondary',
       ])

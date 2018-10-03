@@ -1,10 +1,10 @@
 'use strict'
 
 // https://www.w3.org/TR/screen-orientation/
-// https://www.w3.org/TR/2018/WD-screen-orientation-20180706/
+// https://www.w3.org/TR/2018/WD-screen-orientation-20180926/
 
-const ConfigBase = require('class-config-base')
-const { readonly, writable, method } = ConfigBase
+const Config = require('class-config-base')
+const { readonly, writable, method } = Config
 const { ScreenConfig } = require('jsdom-browser.screen')
 const { calcScreenAngle } = ScreenConfig
 const { EventEmitter } = require('events')
@@ -21,16 +21,22 @@ const handleDocumentVisible = require('./lib/handle-document-visible')
 // (3.3) #orientationtype-enum
 const defaultConfig = require('./default')
 
-class ScreenOrientationConfig extends ConfigBase {
-
-  constructor (screenConfig, initConfig) {
+class ScreenOrientationConfig extends Config {
+  constructor (initConfig) {
     super(initConfig, defaultConfig)
+
+    let configManager
+    if (initConfig && initConfig.$configManager) {
+      configManager = initConfig.$configManager
+    } else {
+      configManager = new Config.Manager()
+    }
+    Object.defineProperty(this, '$configManager', { value: configManager })
 
     // (4) #concept
     this.pendingPromise = null
 
     Object.defineProperties(this, {
-      $screenConfig: { value: screenConfig },
       $eventEmitter: { value: new EventEmitter() },
     })
   }
@@ -41,13 +47,11 @@ class ScreenOrientationConfig extends ConfigBase {
 
   configure (orientation, descriptors) {
     super.configure(orientation, descriptors)
+    this.$configManager.set(orientation, this)
 
     Object.defineProperties(this, {
       $eventTarget: { value: orientation },
     })
-
-    // (4.4) #handling-screen-orientation-changes
-    handleOrientationChanges.setup(this)
 
     // (4.1) #reading-the-screen-orientation
     readScreenOrientation(this)
@@ -95,7 +99,7 @@ class ScreenOrientationConfig extends ConfigBase {
       // (3.2) #screenorientation-interface
       currentAngle: writable({
         get: () => priv.currentAngle,
-        set: angle => { priv.currentAngle = calcScreenAngle(angle) },
+        set: angle => { priv.currentAngle = calcScreenAngle(-angle) },
       }),
 
       // (3.3) #orientationtype-enum

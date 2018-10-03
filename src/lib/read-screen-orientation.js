@@ -7,29 +7,33 @@ const updateOrientationInformation = require('./update-orientation-info')
 function readScreenOrientation (config) {
   const win = getWindow(config.$eventTarget)
   if (win === win._top) {
-    coordinateOrientation(config)
+    coordinateOrientation(config, win)
   }
 
   updateOrientationInformation(config)
 }
 
-function coordinateOrientation (config) {
-  const { $screenConfig } = config
-  const { width, height } = $screenConfig
+function coordinateOrientation (config, window) {
+  const screenConfig = config.$configManager.getConfig(window.screen)
+  if (!screenConfig) {
+    return
+  }
+
+  const { width, height } = screenConfig
   const heading = (width > height) ? 'landscape-' : 'portrait-'
   const relations = config.relationsOfTypeAndAngle
   const types = Object.keys(relations)
 
-  let type = types.find(t => (relations[t] === $screenConfig.baseAngle))
+  let type = types.find(t => (relations[t] === screenConfig.baseAngle))
   if (!type.startsWith(heading)) {
     type = types.find(t => t.startsWith(heading))
-    $screenConfig.baseAngle = relations[type]
+    screenConfig.baseAngle = relations[type]
   }
 
-  const proto = Object.getPrototypeOf($screenConfig)
-  const desc = Object.getOwnPropertyDescriptor(proto, 'screenAngle')
-  desc.get = () => config.currentAngle
-  Object.defineProperty($screenConfig, 'screenAngle', desc)
+  Object.defineProperty(screenConfig.$private, 'screenAngle', {
+    enumerable: true,
+    get: () => config.currentAngle,
+  })
 }
 
 module.exports = readScreenOrientation

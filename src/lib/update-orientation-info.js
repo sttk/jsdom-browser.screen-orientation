@@ -15,8 +15,7 @@ function updateOrientationInformation (config) {
     return (config.currentType !== oldType)
   }
 
-  const win = getWindow(config.$eventTarget)
-  const angle = correctCurrentAngle(config.$screenConfig, win)
+  const angle = correctCurrentAngle(config)
   const type = Object.keys(config.relationsOfTypeAndAngle)
     .find(t => config.relationsOfTypeAndAngle[t] === angle)
 
@@ -39,8 +38,14 @@ function updateOrientationInformation (config) {
   return (config.currentType !== oldType)
 }
 
-function correctCurrentAngle (screenConfig, window) {
-  if (window === window._top) {
+function correctCurrentAngle (config) {
+  const win = getWindow(config.$eventTarget)
+  const screenConfig = config.$configManager.getConfig(win.screen)
+  if (!screenConfig) {
+    return config.currentAngle
+  }
+
+  if (win === win._top) {
     return calcScreenAngle(screenConfig.deviceAngle)
   }
   return screenConfig.screenAngle

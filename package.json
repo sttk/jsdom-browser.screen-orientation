@@ -7,9 +7,10 @@
     "src/"
   ],
   "scripts": {
-    "test": "eslint . && mocha",
+    "lint": "eslint .",
+    "test": "mocha",
     "coverage": "nyc --reporter=lcov --reporter=text-summary npm test",
-    "coveralls": "nyc --reporter=text-lcov npm test | coveralls",
+    "coveralls": "nyc --reporter=text-lcov mocha | coveralls",
     "wpt:install": "git clone https://github.com/web-platform-tests/wpt test/wpt/tests",
     "wpt:hosts": "./test/wpt/tests/wpt make-hosts-file"
   },
@@ -30,7 +31,7 @@
   },
   "homepage": "https://github.com/sttk/jsdom-browser.screen-orientation#readme",
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "coveralls": "^3.0.2",
     "del": "^3.0.0",
     "gulp": "^4.0.0",
@@ -40,15 +41,15 @@
     "gulp-replace": "^1.0.0",
     "gulp-showhelp": "^1.2.0",
     "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
+    "nyc": "^13.0.1",
     "webidl2js": "^9.0.1",
-    "wpt-runner": "^2.4.0"
+    "wpt-runner": "^2.6.0"
   },
   "dependencies": {
-    "class-config-base": "^1.0.0",
+    "class-config-base": "^1.1.0",
     "default-val": "^0.1.5",
     "domexception": "^1.0.1",
-    "jsdom": "^11.12.0",
-    "jsdom-browser.screen": "^0.1.0"
+    "jsdom": "^12.1.0",
+    "jsdom-browser.screen": "^0.2.2"
   }
 }

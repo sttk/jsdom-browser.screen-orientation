@@ -4,7 +4,7 @@ The implementation of [the Screen Orientation API][spec-url] for [jsdom-browser]
 
 [jsdom-browser][jsdom-browser-url] is a simulator of a Web browser with [JSDOM][jsdom-url].
 
-> This module is implemented along the [Screen Orientation API on 06 July 2018][spec-url]. This specification may become older than the [latest version][latest-spec-url].
+> This module is implemented along the [Screen Orientation API on 26 September 2018][spec-url]. This specification may become older than the [latest version][latest-spec-url].
 
 ## Install
 
@@ -28,7 +28,7 @@ const window = new JSDOM().window
 const screenConfig = new ScreenConfig({ width: 768, height: 1024 })
 screenConfig.configure(window.screen)
 
-const orientationConfig = new ScreenOrientationConfig(screenConfig, {
+const orientationConfig = new ScreenOrientationConfig({
   relationsOfTypeAndAngle: {
     'landscape-primary': 0,
     'portrait-primary': 90,
@@ -80,7 +80,7 @@ orientationConfig.orientations
 Simulates of rotating screen:
 
 ```js
-screenConfig.deviceAngle = 110
+screenConfig.deviceAngle = -110
 orientationConfig.handleRotation()
 
 window.screen.width // => 768
@@ -90,7 +90,7 @@ window.screen.orientation.angle // => 90
 
 screenConfig.width // => 768
 screenConfig.height // => 1024
-screenConfig.deviceAngle // => 110
+screenConfig.deviceAngle // => -110
 screenConfig.screenAngle // => 90
 screenConfig.baseAngle   // => 90
 
@@ -124,7 +124,7 @@ orientation.lock('landscape').then(() => {
 
   screenConfig.width // => 768
   screenConfig.height // => 1024
-  screenConfig.deviceAngle // => 110
+  screenConfig.deviceAngle // => -110
   screenConfig.screenAngle // => 0
   screenConfig.baseAngle   // => 90
 
@@ -160,7 +160,7 @@ window.screen.orientation.angle // => 0
 
 screenConfig.width // => 768
 screenConfig.height // => 1024
-screenConfig.deviceAngle // => 110
+screenConfig.deviceAngle // => -110
 screenConfig.screenAngle // => 0
 screenConfig.baseAngle   // => 90
 
@@ -319,9 +319,9 @@ See the file LICENSE in this distribution for more details.
 [coverage-img]: https://coveralls.io/repos/github/sttk/jsdom-browser.screen-orientation/badge.svg?branch=master
 [coverage-url]: https://coveralls.io/github/sttk/jsdom-browser.screen-orientation?branch=master
 
-[spec-url]: https://www.w3.org/TR/2018/WD-screen-orientation-20180706/
+[spec-url]: https://www.w3.org/TR/2018/WD-screen-orientation-20180926/
 [latest-spec-url]: https://www.w3.org/TR/screen-orientation/
-[webidl-url]: https://www.w3.org/TR/2018/WD-screen-orientation-20180706/#idl-def-screenorientation
+[webidl-url]: https://www.w3.org/TR/2018/WD-screen-orientation-20180926//#idl-def-screenorientation
 
 [jsdom-url]: https://github.com/jsdom/jsdom
 [jsdom-browser-url]: https://github.com/sttk/jsdom-browser

@@ -10,8 +10,8 @@ class ScreenOrientationImpl extends EventTargetImpl {
   constructor(args, privateData) {
     super();
 
-    this._ownerDocument =
-      idlUtils.implForWrapper(privateData.associatedDocument);
+    const { associatedDocument } = privateData;
+    this._ownerDocument = idlUtils.implForWrapper(associatedDocument);
   }
 }
 

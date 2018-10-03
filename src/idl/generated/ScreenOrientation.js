@@ -7,85 +7,67 @@ const convertOrientationLockType = require("./OrientationLockType.js").convert;
 const impl = utils.implSymbol;
 const EventTarget = require("jsdom/lib/jsdom/living/generated/EventTarget.js");
 
-function ScreenOrientation() {
-  throw new TypeError("Illegal constructor");
-}
-
-Object.setPrototypeOf(ScreenOrientation.prototype, EventTarget.interface.prototype);
-Object.setPrototypeOf(ScreenOrientation, EventTarget.interface);
-
-Object.defineProperty(ScreenOrientation, "prototype", {
-  value: ScreenOrientation.prototype,
-  writable: false,
-  enumerable: false,
-  configurable: false
-});
-
-ScreenOrientation.prototype.lock = function lock(orientation) {
-  if (!this || !module.exports.is(this)) {
-    throw new TypeError("Illegal invocation");
+class ScreenOrientation extends EventTarget.interface {
+  constructor() {
+    throw new TypeError("Illegal constructor");
   }
 
-  if (arguments.length < 1) {
-    throw new TypeError(
-      "Failed to execute 'lock' on 'ScreenOrientation': 1 argument required, but only " + arguments.length + " present."
-    );
-  }
-  const args = [];
-  {
-    let curArg = arguments[0];
-    curArg = convertOrientationLockType(curArg, {
-      context: "Failed to execute 'lock' on 'ScreenOrientation': parameter 1"
-    });
-    args.push(curArg);
-  }
-  return utils.tryWrapperForImpl(this[impl].lock(...args));
-};
+  lock(orientation) {
+    if (!this || !module.exports.is(this)) {
+      throw new TypeError("Illegal invocation");
+    }
 
-ScreenOrientation.prototype.unlock = function unlock() {
-  if (!this || !module.exports.is(this)) {
-    throw new TypeError("Illegal invocation");
+    if (arguments.length < 1) {
+      throw new TypeError(
+        "Failed to execute 'lock' on 'ScreenOrientation': 1 argument required, but only " +
+          arguments.length +
+          " present."
+      );
+    }
+    const args = [];
+    {
+      let curArg = arguments[0];
+      curArg = convertOrientationLockType(curArg, {
+        context: "Failed to execute 'lock' on 'ScreenOrientation': parameter 1"
+      });
+      args.push(curArg);
+    }
+    return utils.tryWrapperForImpl(this[impl].lock(...args));
   }
 
-  return this[impl].unlock();
-};
+  unlock() {
+    if (!this || !module.exports.is(this)) {
+      throw new TypeError("Illegal invocation");
+    }
 
-Object.defineProperty(ScreenOrientation.prototype, "type", {
-  get() {
+    return this[impl].unlock();
+  }
+
+  get type() {
     if (!this || !module.exports.is(this)) {
       throw new TypeError("Illegal invocation");
     }
 
     return utils.tryWrapperForImpl(this[impl]["type"]);
-  },
+  }
 
-  enumerable: true,
-  configurable: true
-});
-
-Object.defineProperty(ScreenOrientation.prototype, "angle", {
-  get() {
+  get angle() {
     if (!this || !module.exports.is(this)) {
       throw new TypeError("Illegal invocation");
     }
 
     return this[impl]["angle"];
-  },
+  }
 
-  enumerable: true,
-  configurable: true
-});
-
-Object.defineProperty(ScreenOrientation.prototype, "onchange", {
-  get() {
+  get onchange() {
     if (!this || !module.exports.is(this)) {
       throw new TypeError("Illegal invocation");
     }
 
     return utils.tryWrapperForImpl(this[impl]["onchange"]);
-  },
+  }
 
-  set(V) {
+  set onchange(V) {
     if (!this || !module.exports.is(this)) {
       throw new TypeError("Illegal invocation");
     }
@@ -93,19 +75,16 @@ Object.defineProperty(ScreenOrientation.prototype, "onchange", {
     V = utils.tryImplForWrapper(V);
 
     this[impl]["onchange"] = V;
-  },
-
-  enumerable: true,
-  configurable: true
+  }
+}
+Object.defineProperties(ScreenOrientation.prototype, {
+  lock: { enumerable: true },
+  unlock: { enumerable: true },
+  type: { enumerable: true },
+  angle: { enumerable: true },
+  onchange: { enumerable: true },
+  [Symbol.toStringTag]: { value: "ScreenOrientation", configurable: true }
 });
-
-Object.defineProperty(ScreenOrientation.prototype, Symbol.toStringTag, {
-  value: "ScreenOrientation",
-  writable: false,
-  enumerable: false,
-  configurable: true
-});
-
 const iface = {
   // When an interface-module that implements this interface as a mixin is loaded, it will append its own `.is()`
   // method into this array. It allows objects that directly implements *those* interfaces to be recognized as
@@ -167,8 +146,6 @@ const iface = {
     this._internalSetup(obj);
     Object.defineProperty(obj, impl, {
       value: new Impl.implementation(constructorArgs, privateData),
-      writable: false,
-      enumerable: false,
       configurable: true
     });
 

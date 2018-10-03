@@ -1,9 +1,10 @@
 'use strict'
 
-const { ScreenConfig } = require('jsdom-browser.screen')
+const { ScreenConfig, Screen } = require('jsdom-browser.screen')
 const { ScreenOrientationConfig, ScreenOrientation } = require('../../src')
+const Config = require('class-config-base')
 
-const screenConfigMap = new WeakMap()
+const $configManager = new Config.Manager()
 
 const npw = require('jsdom/lib/jsdom/living/named-properties-window')
 const origInitializeWindow = npw.initializeWindow
@@ -16,19 +17,38 @@ npw.initializeWindow = (window, windowProxy) => {
 }
 
 function setupScreenAndOrientation (win) {
-  let screenConfig = screenConfigMap.get(win._top)
-  if (!screenConfig) {
-    screenConfig = new ScreenConfig()
-    screenConfigMap.set(win._top, screenConfig)
+  let screenConfig
+  if (win === win._top) {
+    screenConfig = new ScreenConfig({ $configManager })
+  } else {
+    const initConfig = $configManager.getConfig(win._top.screen)
+    screenConfig = new ScreenConfig(initConfig, { sharePrivate: true })
   }
-  screenConfig.configure(win.screen)
 
-  const config = new ScreenOrientationConfig(screenConfig)
-  const screenOrientation = ScreenOrientation.create([], {
-    associatedDocument: win.document
+  const screen = Screen.create([], {
+    associatedDocument: win.document,
   })
-  config.configure(screenOrientation)
-  win.screen.orientation = screenOrientation
+  screenConfig.configure(screen)
+  Object.defineProperty(win, 'screen', {
+    enumerable: true,
+    value: screen,
+  })
+
+  let orientationConfig
+  if (win === win._top) {
+    orientationConfig = new ScreenOrientationConfig({ $configManager })
+  } else {
+    const initConfig = $configManager.getConfig(win._top.screen.orientation)
+    orientationConfig = new ScreenOrientationConfig(initConfig)
+  }
+  const orientation = ScreenOrientation.create([], {
+    associatedDocument: win.document,
+  })
+  orientationConfig.configure(orientation)
+  Object.defineProperty(screen, 'orientation', {
+    enumerable: true,
+    value: orientation,
+  })
 }
 
 module.exports = () => {}

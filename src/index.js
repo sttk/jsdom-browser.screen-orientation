@@ -2,5 +2,5 @@
 
 module.exports = {
   ScreenOrientationConfig: require('./config'),
-  ScreenOrientation: require('./idl/generated/ScreenOrientation')
+  ScreenOrientation: require('./idl/generated/ScreenOrientation'),
 }

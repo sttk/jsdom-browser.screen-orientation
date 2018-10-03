@@ -5,9 +5,11 @@ const { dispatchChangeEvent, getWindow } = require('./jsdom')
 
 // (4.4) #handling-screen-orientation-changes
 function handleScreenOrientationChanges (config, byLock) {
-  const { $screenConfig } = config
-  $screenConfig.orientationConfigArray.forEach(cfg => {
-    if (config === cfg) {
+  const topWin = getWindow(config.$eventTarget)._top
+
+  listDescendantWindows(topWin, []).forEach(win => {
+    const cfg = config.$configManager.getConfig(win.screen.orientation)
+    if (cfg === config) {
       if (updateOrientationInformation(cfg) || byLock) {
         fireChangeEvent(cfg)
       }
@@ -20,22 +22,12 @@ function handleScreenOrientationChanges (config, byLock) {
   })
 }
 
-handleScreenOrientationChanges.setup = config => {
-  const { $screenConfig } = config
-  if (Array.isArray($screenConfig.orientationConfigArray)) {
-    const cfg0 = $screenConfig.orientationConfigArray[0]
-    if (!isSameTopDocument(cfg0.$eventTarget, config.$eventTarget)) {
-      throw Error('Don\'t specified a same ScreenConfig object to ' +
-        'ScreenOrientationConfig objects which associated with a different ' +
-        'top document')
-    }
-    $screenConfig.orientationConfigArray.push(config)
-    return
+function listDescendantWindows (win, array) {
+  array.push(win)
+  for (let i = 0; i < win._length; i++) {
+    listDescendantWindows(win[i], array)
   }
-
-  Object.defineProperty($screenConfig, 'orientationConfigArray', {
-    value: [config]
-  })
+  return array
 }
 
 function fireChangeEvent (config) {
@@ -43,12 +35,6 @@ function fireChangeEvent (config) {
     config.$eventEmitter.emit('change', config)
     dispatchChangeEvent(config.$eventTarget)
   })
-}
-
-function isSameTopDocument (node1, node2) {
-  const topDoc1 = getWindow(node1)._top._document
-  const topDoc2 = getWindow(node2)._top._document
-  return topDoc1 === topDoc2
 }
 
 module.exports = handleScreenOrientationChanges

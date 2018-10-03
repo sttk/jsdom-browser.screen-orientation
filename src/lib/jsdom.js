@@ -10,7 +10,7 @@ function getWindow (node) {
 
 // For passing web-platform-tests/wpt/screen-orientation/lock-basic.html
 function getPromiseClass (node) {
-  return (getWindow(node).Promise || Promise)
+  return getWindow(node).Promise || Promise
 }
 
 function dispatchChangeEvent (eventTarget) {
